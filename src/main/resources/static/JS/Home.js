@@ -126,12 +126,12 @@ function addReserva(){
 $(document).ready(function() {
     function updateStatus() {
         $.ajax({
-            url: '/arduinoStatus', // Endpoint do Spring Boot que retorna os status do Arduino
+            url: '/getMessages', // Endpoint do Spring Boot que retorna os status do Arduino
             type: 'GET',
             success: function(data) {
             if(data.sucesso){
-                $('#buttonStatus').text(data.buttonStatus ? 'O botão de emergência foi pressionado!' : '');
-                $('#doorStatus').text(data.doorStatus ? 'A porta está obstruída.' : '');
+                $('#emergencyButtonPressed').text(data.buttonStatus ? 'O botão de emergência foi pressionado!' : '');
+                $('#obstructionMessage').text(data.doorStatus ? 'A porta está obstruída.' : '');
             }
             else{
             mensagemErro(data.mensagem)

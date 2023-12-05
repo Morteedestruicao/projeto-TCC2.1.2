@@ -7,40 +7,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class S_Arduino {
 
+    private static SerialPort serialPort;
     public static void mandarArduino() {
+        if (serialPort != null && serialPort.isOpen()) { // Verifica se a porta serial está aberta
+            M_Porta m_porta = new M_Porta();
+            boolean ativoAtual = m_porta.isAtivo();
+            String message = ativoAtual ? "true" : "false";
 
-        SerialPort[] ports = SerialPort.getCommPorts();
-        SerialPort serialPort;
-        if (ports.length > 0) {
-            serialPort = ports[0]; // Seleciona a primeira porta serial disponível (altere conforme necessário)
+            serialPort.setBaudRate(9600); // Configura a taxa de transmissão (baud rate)
+            serialPort.writeBytes(message.getBytes(), message.getBytes().length);
+            System.out.println("Enviado para Arduino: " + message);
 
-            if (serialPort.openPort()) {
-                System.out.println("Porta serial aberta!");
-
-                serialPort.setBaudRate(9600); // Define a taxa de transmissão (baud rate)
-
-                M_Porta m_porta = new M_Porta();
-                boolean ativoAtual = m_porta.isAtivo();
-
-                String message = ativoAtual ? "true" : "false";
-                serialPort.writeBytes(message.getBytes(), message.getBytes().length);
-                System.out.println("Enviado para Arduino: " + message);
+        } else {
+            System.err.println("A porta serial não está aberta ou não foi inicializada.");
+        }
                 try {
                     Thread.sleep(2000);
-//                        statusPorta = true;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-
-//                        statusPorta = false;
-                }
-
-                serialPort.closePort(); // Fecha a porta serial
-            } else {
-                System.err.println("Não foi possível abrir a porta serial.");
-            }
-        } else {
-            System.err.println("Nenhuma porta serial encontrada.");
-        }
-//        return statusPorta;
-    }
-}
+    }}}
