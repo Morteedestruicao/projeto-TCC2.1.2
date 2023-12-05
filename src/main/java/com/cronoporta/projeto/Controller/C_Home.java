@@ -1,10 +1,13 @@
 package com.cronoporta.projeto.Controller;
 
+import com.cronoporta.projeto.Model.M_Arduino;
 import com.cronoporta.projeto.Model.M_Resposta;
+import com.cronoporta.projeto.ProjetoApplication;
 import com.cronoporta.projeto.Service.S_Email;
 import com.cronoporta.projeto.Service.S_Reserva;
 import com.cronoporta.projeto.Service.S_ReservaSema;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,8 @@ import java.time.LocalDateTime;
 @Controller
 @SessionAttributes("usuario")
 public class C_Home {
+    private String emergencyButtonMessage = "";
+    private String obstructionMessage = "";
 
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
@@ -22,6 +27,8 @@ public class C_Home {
             model.addAttribute("usuario",session.getAttribute("usuario"));
             model.addAttribute("reservas",S_Reserva.listReservas());
             model.addAttribute("reservaSema",S_ReservaSema.listReservasSema());
+            model.addAttribute("emergencyButtonMessage", emergencyButtonMessage);
+            model.addAttribute("obstructionMessage", obstructionMessage);
             return "Home/home";
         } else {
             // A sessão não existe, redirecionar para a página de login
@@ -71,7 +78,14 @@ public class C_Home {
         return S_Email.sendMail(email);
     }
 
+    @Autowired
+    private ProjetoApplication projetoApplication;
 
+    @GetMapping("/getMessages")
+    @ResponseBody
+    public M_Arduino getMessages() {
 
+        return new M_Arduino(emergencyButtonMessage,obstructionMessage);
+    }
 
 }

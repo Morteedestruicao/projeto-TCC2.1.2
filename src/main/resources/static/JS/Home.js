@@ -123,6 +123,29 @@ function addReserva(){
 
 }
 
+$(document).ready(function() {
+    function updateStatus() {
+        $.ajax({
+            url: '/arduinoStatus', // Endpoint do Spring Boot que retorna os status do Arduino
+            type: 'GET',
+            success: function(data) {
+            if(data.sucesso){
+                $('#buttonStatus').text(data.buttonStatus ? 'O botão de emergência foi pressionado!' : '');
+                $('#doorStatus').text(data.doorStatus ? 'A porta está obstruída.' : '');
+            }
+            else{
+            mensagemErro(data.mensagem)
+            },
+            }
+            error: function() {
+                mensagemErro("Houve um problema ao salvar o Horario.");/
+            }
+        });
+    }
+
+    setInterval(updateStatus, 2000); // Atualiza a cada 2 segundos (ajuste conforme necessário)
+});
+
 function addReservaSema(){
     let horarioESema = $("#horarioESema").val();
     let horarioSSema = $("#horarioSSema").val();
